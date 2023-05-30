@@ -6,9 +6,9 @@ from fastapi import APIRouter, status, HTTPException
 
 from apps.config import settings
 
-from .schemas import AccountBalance, OrderSchema
+from .schemas import AccountBalance, OrderSchema, ExchangeRateSchema, OrderListSchema
 from .service import PortfolioService
-from .utils import check_order
+from .utils import check_order, get_exchange_rate, get_min_qty
 from .creating_orders import generate_orders, generate_random_prices
 
 portfolio_service = PortfolioService.get_instance()
@@ -58,26 +58,55 @@ async def place_order(order: OrderSchema):
                                                                             "of prices and the number of coefficients "
                                                                             "don't match")
 
-    print(portfolio_service.pairs)
-    print(portfolio_service.portfolio)
-    print(portfolio_service.pairs_info)
-
     timestamp = int(time.time() * 1000)
 
     try:
+        # adjusting the total amount of the order to the exchange rate of the pair
+        exchange_rate = get_exchange_rate(order_dict["asset"])
+        if not exchange_rate.status:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=exchange_rate.message)
+
+        exchange_rate = exchange_rate.data
+
+        # adjusting the order to the minimum quantity of the pair
+        min_qty = get_min_qty(order_dict["asset"])
+        if not min_qty.status:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=min_qty.message)
+
+        min_qty = min_qty.data
+
         for i in range(len_prices):
-            print(coefficients[i], market_prices[i])
             order = client.create_order(symbol=order_dict["asset"],
                                         side=order_dict["side"],
                                         type="LIMIT",
                                         timeInForce="GTC",
-                                        quantity=round(coefficients[i], 2),
+                                        quantity=round(coefficients[i] * exchange_rate, min_qty),
                                         price=round(market_prices[i], 2),
                                         recvWindow=settings.recv_window,
                                         timestamp=timestamp)
-            print(order)
+            portfolio_service.update_orders(order)
 
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     return {"message": "Order(s) placed successfully"}
+
+
+@trade_router.get("/account/exchange-rates",
+                  response_model=List[ExchangeRateSchema],
+                  status_code=status.HTTP_200_OK,
+                  tags=["trade"])
+async def exchange_rates():
+    rates = portfolio_service.pairs_info
+
+    return rates
+
+
+@trade_router.get("/account/current-orders",
+                  response_model=List[OrderListSchema],
+                  status_code=status.HTTP_200_OK,
+                  tags=["trade"])
+async def orders():
+    orders = portfolio_service.get_orders()
+
+    return orders

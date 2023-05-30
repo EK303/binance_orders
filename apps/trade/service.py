@@ -34,6 +34,8 @@ class PortfolioService:
     portfolio: list = []
     pairs: set = {}
     pairs_info: list = []
+    quotes_info: list = []
+    orders: list = []
 
     _instance = None
 
@@ -44,6 +46,7 @@ class PortfolioService:
             cls._instance._get_tickers()
             cls._instance._get_pairs()
             cls._instance._get_exchange_rates()
+            cls._instance._get_open_orders()
         return cls._instance
 
     @classmethod
@@ -69,7 +72,7 @@ class PortfolioService:
         if not self.pairs:
             symbols = client.get_exchange_info()["symbols"]
             for symbol in symbols:
-                print(client.get_symbol_info(symbol["symbol"]))
+                self.quotes_info.append(client.get_symbol_info(symbol["symbol"]))
             self.pairs = set([item["symbol"] for item in symbols])
         return self.pairs
 
@@ -77,10 +80,16 @@ class PortfolioService:
         def get_exchange_rate(pair):
             ticker = client.get_symbol_ticker(symbol=pair)
             rate = float(ticker["price"])
-            return {pair: rate}
+            return {"pair": pair,
+                    "rate": rate}
 
         for pair in self.pairs:
             self.pairs_info.append(get_exchange_rate(pair))
+
+    def _get_open_orders(self):
+        if not self.orders:
+            self.orders = client.get_open_orders()
+        return self.orders
 
     def get_pairs(self):
         return self.pairs
@@ -90,6 +99,12 @@ class PortfolioService:
 
     def get_portfolio(self):
         return self.portfolio
+
+    def get_orders(self):
+        return self.orders
+
+    def update_orders(self, order):
+        self.orders.append(order)
 
     # as the positions in the portfolio are kept in plain format,
     # we avoid accounting for pairs and agree that the other side of the trade

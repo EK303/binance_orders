@@ -30,3 +30,23 @@ def check_order(asset: str,
         return Result.fail(status=False, message="Maximum price is required")
 
     return Result.success(status=True, data=None)
+
+
+def get_exchange_rate(pair: str):
+    for pair_info in portfolio_service.pairs_info:
+        if pair_info["pair"] == pair:
+            return Result.success(status=True, data=pair_info["rate"])
+    return Result.fail(status=False, message="The exchange rate is not found")
+
+
+def get_min_qty(pair: str):
+    for pair_info in portfolio_service.quotes_info:
+        if pair_info["symbol"] == pair:
+            for fil in pair_info["filters"]:
+                if fil["filterType"] == "LOT_SIZE":
+                    min_qty = float(fil["minQty"])
+                    min_qty = len(str(min_qty)) - 2
+                    return Result.success(status=True, data=min_qty)
+
+    return Result.fail(status=False, message="The minQty is not found")
+
