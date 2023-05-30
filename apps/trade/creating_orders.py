@@ -18,7 +18,7 @@ def generate_random_prices(num_orders: int, min_price: float, max_price: float):
         return Result.fail(status=False, message=str(e))
 
 
-# Using Linear Programming techniques to find the right proportion of value to
+# Using the Simplex Method from Linear Algebra to find the right proportion of value to
 # fit the constraints
 def generate_orders(prices: list, max_volume: float,
                     amount_dif: float):
@@ -44,7 +44,7 @@ def generate_orders(prices: list, max_volume: float,
 
         problem.solve()
 
-        return Result.success(status=True, data=[value(variable) for variable in coefficients])
+        return Result.success(status=True, data=([value(variable) for variable in coefficients], prices))
 
     except PulpError as e:
         return Result.fail(status=False, message=str(e))

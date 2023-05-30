@@ -11,14 +11,14 @@ def check_order(asset: str,
                 priceMin: float,
                 priceMax: float) -> Result:
 
-    if not asset in portfolio_service.tickers:
-        return Result.fail(status=False, message="Asset is not present in portfolio")
+    if not asset in portfolio_service.pairs:
+        return Result.fail(status=False, message="The pair is not in the list of trades")
 
     if not number:
         return Result.fail(status=False, message="Number of orders is required")
 
     if not amountDif:
-        return Result.fail(status=True, amount_dif=amountDif)
+        amountDif = 0
 
     if not side in ["SELL", "BUY"]:
         return Result.fail(status=False, message="Invalid side")
@@ -28,3 +28,5 @@ def check_order(asset: str,
 
     if not priceMax:
         return Result.fail(status=False, message="Maximum price is required")
+
+    return Result.success(status=True, data=None)

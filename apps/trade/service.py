@@ -1,3 +1,5 @@
+import asyncio
+
 from apps.config import settings
 
 client = settings.TESTNET_CLIENT
@@ -25,11 +27,13 @@ class PortfolioService:
     """
     tickers: a set consisting all the tickers currently held by the user
     portfolio: a list of dictionaries consisting all the assets held by the user and respective balances
+    pairs: all available pairs for trading on Binance API in test mode
     """
 
     tickers: set = {}
     portfolio: list = []
     pairs: set = {}
+    pairs_info: list = []
 
     _instance = None
 
@@ -39,6 +43,7 @@ class PortfolioService:
             cls._instance._get_portfolio()
             cls._instance._get_tickers()
             cls._instance._get_pairs()
+            cls._instance._get_exchange_rates()
         return cls._instance
 
     @classmethod
@@ -63,11 +68,25 @@ class PortfolioService:
     def _get_pairs(self):
         if not self.pairs:
             symbols = client.get_exchange_info()["symbols"]
+            for symbol in symbols:
+                print(client.get_symbol_info(symbol["symbol"]))
             self.pairs = set([item["symbol"] for item in symbols])
         return self.pairs
 
+    def _get_exchange_rates(self):
+        def get_exchange_rate(pair):
+            ticker = client.get_symbol_ticker(symbol=pair)
+            rate = float(ticker["price"])
+            return {pair: rate}
+
+        for pair in self.pairs:
+            self.pairs_info.append(get_exchange_rate(pair))
+
     def get_pairs(self):
         return self.pairs
+
+    def get_pairs_info(self):
+        return self.pairs_info
 
     def get_portfolio(self):
         return self.portfolio
@@ -75,6 +94,4 @@ class PortfolioService:
     # as the positions in the portfolio are kept in plain format,
     # we avoid accounting for pairs and agree that the other side of the trade
     # by default will be USDT as the universal currency
-
-
 
