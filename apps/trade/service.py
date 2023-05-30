@@ -106,7 +106,3 @@ class PortfolioService:
     def update_orders(self, order):
         self.orders.append(order)
 
-    # as the positions in the portfolio are kept in plain format,
-    # we avoid accounting for pairs and agree that the other side of the trade
-    # by default will be USDT as the universal currency
-
