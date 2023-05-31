@@ -41,12 +41,15 @@ def get_exchange_rate(pair: str):
 
 def get_min_qty(pair: str):
     for pair_info in portfolio_service.quotes_info:
-        if pair_info["symbol"] == pair:
-            for fil in pair_info["filters"]:
-                if fil["filterType"] == "LOT_SIZE":
-                    min_qty = float(fil["minQty"])
-                    min_qty = len(str(min_qty)) - 2
-                    return Result.success(status=True, data=min_qty)
+        if pair_info["symbol"] != pair:
+            continue
+        for fil in pair_info["filters"]:
+            if fil["filterType"] != "LOT_SIZE":
+                continue
+
+            min_qty = float(fil["minQty"])
+            min_qty = len(str(min_qty)) - 2
+            return Result.success(status=True, data=min_qty)
 
     return Result.fail(status=False, message="The minQty is not found")
 

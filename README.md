@@ -19,7 +19,8 @@ The format of parameters received is the following:
 
 The application uses the **Simplex Method** from Linear Algebra to generate orders based on given constraints(parameters).
 
-Currently, I am working on the error handling, therefore, the application is not available for a full scale use.
+The project is going to be gradually updated and modified with additional functionality. However, at the time being, it can 
+still be used to place orders, track their execution on the exchange.
 
 The project is realized on the FastAPI Framework to save the possibilities to further expand the functionality.
 Thus, the current version of the application is a simple API that receives the order parameters and places them on the exchange.
