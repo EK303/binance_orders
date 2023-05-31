@@ -56,3 +56,17 @@ To start application further usage, it's sufficient to run:
 ```bash
 docker-compose up
 ```
+
+## Usage 
+
+As the application is set up in a testing mode, you'll be granted with an initial balance for various cryptocurrencies.
+There are available endpoints that can help you track your balance, exchange rates between currencies and placed orders.
+
+The feasible pairs for trading are as following:
+
+```bash
+"LTCBUSD", "TRXBNB", "BNBUSDT", "TRXBUSD", "LTCUSDT", "XRPBTC", "ETHUSDT", "BTCUSDT", "TRXBTC", "BNBBUSD", "BNBBTC", 
+"XRPBNB", "ETHBUSD", "TRXUSDT", "BTCBUSD", "ETHBTC", "XRPBUSD", "LTCBNB", "LTCBTC", "XRPUSDT",
+```
+ 
+
