@@ -41,7 +41,7 @@ Once you've cloned from the repository, you'll need:
 1) Create a .env file as per the .env_example file. If you want only test the Binance API, you can
 ignore all parameters except API_KEY and API_SECRET;
 2) Create a Binance account and generate API_KEY and API_SECRET in the [API Management](https://www.binance.com/en/support/faq/how-to-test-my-functions-on-binance-testnet-ab78f9a1b8824cf0a106b4229c76496d).
-Once you get the get the keys set values for API_KEY and API_SECRET in the .env file.;
+Once you get the keys set values for API_KEY and API_SECRET in the .env file.;
 
 ## Running the application
 
@@ -68,5 +68,8 @@ The feasible pairs for trading are as following:
 "LTCBUSD", "TRXBNB", "BNBUSDT", "TRXBUSD", "LTCUSDT", "XRPBTC", "ETHUSDT", "BTCUSDT", "TRXBTC", "BNBBUSD", "BNBBTC", 
 "XRPBNB", "ETHBUSD", "TRXUSDT", "BTCBUSD", "ETHBTC", "XRPBUSD", "LTCBNB", "LTCBTC", "XRPUSDT",
 ```
- 
 
+## Optional
+
+The application can easily be extended to make account management impossible without authentication and email verification.
+Therefore, the **'auth'** is left in the project to always keep this possibility.
